@@ -4,7 +4,7 @@ const router = express.Router();
 const { body } = require("express-validator/check");
 const isAuth = require("../middlewear/auth-middlewear");
 
-router.get("/posts", isAuth, feedRoutes.getPosts);
+router.get("/posts", feedRoutes.getPosts);
 router.post(
   "/post",
   isAuth,

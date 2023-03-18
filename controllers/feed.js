@@ -3,6 +3,8 @@ const Post = require("../models/posts");
 const path = require("path");
 const fs = require("fs");
 const User = require("../models/user");
+const io = require("../socket");
+const user = require("../models/user");
 
 exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -13,6 +15,7 @@ exports.getPosts = (req, res, next) => {
     .then((posts) => {
       totalItems = posts;
       return Post.find()
+        .populate("creator")
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
     })
@@ -77,12 +80,15 @@ exports.createPost = (req, res, next) => {
       return User.findById(req.userId);
     })
     .then((user) => {
-      console.log(user, "user");
       creator = user;
       user.posts.push(post);
       return user.save();
     })
     .then((result) => {
+      io.getIO().emit("post", {
+        action: "create",
+        post: { ...post._doc, creator: { _id: req.userId, name: user.name } },
+      });
       return res.status(201).json({
         message: "Post create Successfully",
         post: post,

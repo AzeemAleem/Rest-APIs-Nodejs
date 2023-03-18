@@ -43,7 +43,8 @@ exports.login = (req, res, next) => {
   let loadeduser;
   User.findOne({ email: email })
     .then((user) => {
-      if (!user) {
+      console.log(user,"hshdshdhsdhshdhsd")
+      if (user==null) {
         const error = new Error('A user with this email could not be found.');
         error.statusCode = 401;
         throw error;
