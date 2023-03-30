@@ -44,7 +44,7 @@ exports.login = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        const error = new Error('A user with this email could not be found.');
+        const error = new Error("A user with this email could not be found.");
         error.statusCode = 401;
         throw error;
       }
@@ -53,7 +53,7 @@ exports.login = (req, res, next) => {
     })
     .then((isEqual) => {
       if (!isEqual) {
-        const error = new Error('Wrong password!');
+        const error = new Error("Wrong password!");
         error.statusCode = 401;
         throw error;
       }
@@ -68,5 +68,13 @@ exports.login = (req, res, next) => {
         }
       );
       res.status(200).json({ token: token, userId: loadeduser._id.toString() });
+      return;
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+      return err;
     });
 };
